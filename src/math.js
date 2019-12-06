@@ -12,11 +12,32 @@ const celsiusToFahrenheit = (temp) => {
 
 }
 
+const add = (a, b) {
+
+  return new Promise((resolve, reject) => {
+
+    setTimeout(() => {
+
+      if (a < 0 || b < 0) {
+
+        return reject('Numbers must be non-negative')
+
+      }
+
+      resoleve(a + b)
+
+    }, 2000)
+
+  })
+
+}
+
 // Export functions.
 module.exports = {
 
   calculateTip,
   fahrenheitToCelsius,
-  celsiusToFahrenheit
+  celsiusToFahrenheit,
+  add
 
 }
