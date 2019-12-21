@@ -21,6 +21,9 @@ const router = new express.Router();
 /*
   Endoints for CRUD operations.
 */
+// Endpoints for posting.
+// Url in postman will look something like this.
+// localhost:3000/users
 router.post('/users', async (req, res) => {
 
   const user = new User(req.body)

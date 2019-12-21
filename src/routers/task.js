@@ -18,7 +18,10 @@ const router = new express.Router();
   Endpoints for CRUD operations.
 
 */
-
+// Endpoint for posting.
+// Url in postamn will look something
+// like this,
+// localhost:3000/tasks
 router.post('/tasks', auth, async(req, res) => {
 
 
