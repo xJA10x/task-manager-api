@@ -6,25 +6,45 @@
 
 // Imports supertest npm library.
 const request = require('supertest');
+// Imports jwt to genarate json web token
+const jwt = require('jsonwebtoken');
+// Imports mongoose npm library.
+const mongoose = require('mongoose');
 // Initializes express app.
 const app = ('../scr/app');
 // Impors User model.
 const User = require('../src/models/user');
+
+
+// Creates id.
+const userOneId = new mongoose.Types.ObjectId();
+
+
+
 
 // Using jest for testing.
 
 // Creates new user.
 const userOne = {
 
+  _id: userOneId,
   name: 'Mike',
   email: 'mike@example.com',
-  password: '56what!!'
+  password: '56what!!',
+  // Gives user authentication token.
+  tokens: [{
+
+    // Creates token property.
+    token: jwt.sign({_id: userOneId}, process.env.JWT_SECRET)
+
+  }]
 
 }
 
 // Function call
 // using async await.
 // The purpose of this function is to wipe all the data from the database.
+// Runs before each test case.
 beforeEach(async () => {
 
   // Deletes all the users from the database.
@@ -96,5 +116,55 @@ test('Should not login nonexistent user', async() => {
     password: 'thisisnotmypass'
 
   }).expect(400)
+
+});
+
+////////////////////////////////////////
+//
+//  Endpoint for getting user profile
+//
+///////////////////////////////////////
+
+test('should get profile for user', async () => {
+
+  await request(app)
+    .get('/users/me')
+    .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+    .send()
+    .expext(200)
+
+});
+
+test('Should not get profile for unauthenticated user', async() => {
+
+  await request(app)
+    .get('/users/me')
+    .send()
+    .expect(401)
+
+});
+
+/////////////////////////////////////////
+//
+//  Endpoint for user to close their account
+//
+//////////////////////////////////////////
+
+test('should delete account for user', async() => {
+
+  await request(app)
+    .delete('/users/me')
+    .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
+    .send()
+    .expect(200)
+
+});
+
+test('should not delete account for unauthenticated user', async() => {
+
+  await request(app)
+    .delete('/users/me')
+    .send()
+    .expext(401)
 
 });
