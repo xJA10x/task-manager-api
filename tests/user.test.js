@@ -20,8 +20,6 @@ const User = require('../src/models/user');
 const userOneId = new mongoose.Types.ObjectId();
 
 
-
-
 // Using jest for testing.
 
 // Creates new user.
@@ -81,7 +79,7 @@ test('Should signup a new user', async () => {
   // send allows us to provide an object containing our data.
   // Endpoint for posting.
   // Assertions expects for something to happen after the request is made.
-  await request(app).post('/users').send({
+  const respone = await request(app).post('/users').send({
 
     // Configures data to be send.
     name: 'Jhoset',
@@ -90,19 +88,43 @@ test('Should signup a new user', async () => {
 
   }).expect(201)
 
-});
+  // Fetching the user from the database.
+  // Assert that the database was changed correctly.
+  const user = await User.findById(response.body.user._id)
+  expect(user).not.toBeNull()
 
+  // Assert from the response body.
+  expect(response.body).toMatchObject({
+
+    user: {
+
+      name: 'Jhoset',
+      email: 'jhoset@example.com'
+
+    },
+
+    token: user.tokens[0].token
+
+  })
+
+  expect(user.password).not.toBe('MyPass777!')
+
+});
 
 // Test case.
 test('should login existing user', async () => {
 
   // Endpoint for posting.
-  await request(app).post('/users/login').send({
+  const response = await request(app).post('/users/login').send({
 
     email: userOne.email,
     password: userOne.password
 
   }).expect(200)
+
+  // Fetches user from the database.
+  const user = await user.findById(userOneId)
+  expect(response.body.token).toBe(user.tokens[1].token)
 
 });
 
@@ -157,6 +179,10 @@ test('should delete account for user', async() => {
     .set('Authorization', `Bearer ${userOne.tokens[0].token}`)
     .send()
     .expect(200)
+
+    // Fetches the user.
+    const user = await User.findById(userOneId)
+    expect(user).toBeNull()
 
 });
 
