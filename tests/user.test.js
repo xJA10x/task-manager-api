@@ -6,52 +6,18 @@
 
 // Imports supertest npm library.
 const request = require('supertest');
-// Imports jwt to genarate json web token
-const jwt = require('jsonwebtoken');
-// Imports mongoose npm library.
-const mongoose = require('mongoose');
 // Initializes express app.
 const app = ('../scr/app');
 // Impors User model.
 const User = require('../src/models/user');
-
-
-// Creates id.
-const userOneId = new mongoose.Types.ObjectId();
-
-
-// Using jest for testing.
-
-// Creates new user.
-const userOne = {
-
-  _id: userOneId,
-  name: 'Mike',
-  email: 'mike@example.com',
-  password: '56what!!',
-  // Gives user authentication token.
-  tokens: [{
-
-    // Creates token property.
-    token: jwt.sign({_id: userOneId}, process.env.JWT_SECRET)
-
-  }]
-
-}
+// uses object destructoring to grab variables and functions.
+const {userOneId, userOne, setupDatabase } = require('./fixtures/db');
 
 // Function call
 // using async await.
 // The purpose of this function is to wipe all the data from the database.
 // Runs before each test case.
-beforeEach(async () => {
-
-  // Deletes all the users from the database.
-  await User.deleteMany()
-
-  // Saves user to the database.
-  await new User(userOne).save()
-
-});
+beforeEach(setupDatabase)
 
 // Function call.
 // Takes one parameter,
